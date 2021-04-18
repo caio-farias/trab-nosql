@@ -14,20 +14,20 @@ class Cassandra {
     const query = "SELECT * FROM songs_by_title WHERE title=?"
     this.client.execute(query, params, function(err, res) {
       if(err){
-        console.log(err);
+        console.log(err)
       }else{
-        console.table(res.rows);
+        console.table(res.rows)
       }
-    });
+    })
   }
 
   selectPlaylistByTags = async (params) => {
     const query = 'SELECT * FROM playlists_by_title WHERE tags CONTAINS ? ALLOW FILTERING'
     this.client.execute(query, params, function(err, res) {
       if(err){
-        console.log(err);
+        console.log(err)
       }else{
-        console.table(res.rows);
+        console.table(res.rows)
       }
     });
   }
@@ -36,9 +36,9 @@ class Cassandra {
     const query = 'SELECT playlist_songs FROM playlists_by_title WHERE title=?';
     this.client.execute(query, params, function(err, res) {
       if(err){
-        console.log(err);
+        console.log(err)
       }else{
-        console.table(res.rows);
+        console.table(res.rows)
       }
     });
   }
@@ -47,9 +47,9 @@ class Cassandra {
     const query  = 'INSERT INTO songs (id, artist, album, title) VALUES (now(), ?, ?, ?)'
     this.client.execute(query , params, function (err, res){
       if(err){
-        console.log(err);
+        console.log(err)
       }else{
-        console.log(res);
+        console.log(res)
       }
     })
   }
@@ -77,7 +77,7 @@ class Cassandra {
   insertBatch = async(queries, info) => {
     const { cycleCondition, type } = info
     const start = process.hrtime()
-    await this.client.batch(queries, { prepare: true, readTimeout: 30000 });
+    await this.client.batch(queries, { prepare: true, readTimeout: 30000 })
     const end = process.hrtime(start)[1] / 1000000
     if(cycleCondition)
       console.log(`Batch ${type} inserida em ${end}ms!`)
@@ -95,4 +95,4 @@ class Cassandra {
   }
 }
 
-module.exports = Cassandra;
+module.exports = Cassandra

@@ -2,7 +2,7 @@ const Cassandra = require('./cassandra')
 const { generateSong, generatePlaylist} = require('./utils')
 
 async function main(){
-  const Cass = new Cassandra();
+  const Cass = new Cassandra()
   const start = process.hrtime()
   
   const total = 100000
