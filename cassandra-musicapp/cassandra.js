@@ -32,7 +32,7 @@ class Cassandra {
     });
   }
 
-  selectPlaylistSongs= async (params) => {
+  selectPlaylistSongsByTitle= async (params) => {
     const query = 'SELECT playlist_songs FROM playlists_by_title WHERE title=?';
     this.client.execute(query, params, function(err, res) {
       if(err){
@@ -54,18 +54,42 @@ class Cassandra {
     })
   }
 
-  insertBatch = async(queries) => {
-    await this.client.batch(queries, { prepare: true });
-    console.log('Data updated on cluster');
+  insertManySongs = async (params, cycleCondition) => {
+    const insert = 'INSERT INTO songs (id, artist, album, title) VALUES (now(), ?, ?, ?)';
+    const queries = []
+    params.forEach(song => {
+      queries.push({query: insert, params: song})
+    })
+    if(queries.length > 0)
+      await this.insertBatch(queries, {cycleCondition: cycleCondition, type: 'songs'})
+  }
+
+  insertManyPlaylists = async (params, cycleCondition) => {
+    const insert = 'INSERT INTO playlists (id, title, tags, playlist_songs) VALUES (now(), ?, ?, ?)';
+    const queries = []
+    params.forEach(playlist => {
+      queries.push({query: insert, params: playlist})
+    })
+    if(queries.length > 0)
+      await this.insertBatch(queries, {cycleCondition: cycleCondition, type: 'playlists'})
+  }
+
+  insertBatch = async(queries, info) => {
+    const { cycleCondition, type } = info
+    const start = process.hrtime()
+    await this.client.batch(queries, { prepare: true, readTimeout: 30000 });
+    const end = process.hrtime(start)[1] / 1000000
+    if(cycleCondition)
+      console.log(`Batch ${type} inserida em ${end}ms!`)
   }
   
   insertPlaylist = async (params) => {
-    const query  = 'INSERT INTO playlists (id, title, playlist_songs, tags) VALUES(now(), ?, ?)'
-    this.client.execute(query , params, function (err, res){
+    const query  = 'INSERT INTO playlists (id, title, tags, playlist_songs) VALUES(now(), ?, ?, ?)'
+    this.client.execute(query , params, { prepare: true } ,function (err, res){
       if(err){
-        console.log(err);
+        console.log(err)
       }else{
-        console.table(res.table);
+        console.log(res)
       }
     })
   }

@@ -1,30 +1,38 @@
 const Cassandra = require('./cassandra')
 const { generateSong, generatePlaylist} = require('./utils')
 
-async function main(exec){
+async function main(){
   const Cass = new Cassandra();
+  const start = process.hrtime()
   
-  const total = 100
-  const batchSize = total/10
+  const total = 100000
+  const batchSize = 20
   const it = Math.floor(total/batchSize)
 
-  const params =  [['ARTIST1', 'ALBUM1', 'SONG5'], ['ARTIST1', 'ALBUM1', 'SONG6']]
-  const insert = 'INSERT INTO songs (id, artist, album, title) VALUES (now(), ?, ?, ?)'
-  const queries = [
-    {
-      query: insert,
-      params: params[0]
-    },
-    {
-      query: insert,
-      params: params[1]
+  
+  for(let cycle = 1; cycle <= it; cycle++){
+    const batchSongs = []
+    const batchPlaylists = []
+
+    for(let batchLength = 0; batchLength < batchSize; batchLength++){
+      const song = generateSong()
+      batchSongs.push(song)
+      const playlist = generatePlaylist()
+      batchPlaylists.push(playlist)
     }
-  ]
 
-  // Cass.insertBatch(queries)
-  Cass.selectSongByTitle(['SONG6'])
+    if(it%cycle == 0){
+      console.log(`CICLO ---------------------- ${cycle} --`)
+      await Cass.insertManySongs(batchSongs, it%cycle == 0)
+      await Cass.insertManyPlaylists(batchPlaylists, it%cycle == 0)
+      console.log('------------------------------------')
+    }else{
+      await Cass.insertManySongs(batchSongs, it%cycle == 0)
+      await Cass.insertManyPlaylists(batchPlaylists, it%cycle == 0)
+    }
+  }
+  console.log(`Feito em %dms`, process.hrtime(start)[1] / 1000000)
 }
+main()
 
 
-
-main([true, true, true])

@@ -2,19 +2,19 @@ const { names, lastNames, titles, tags } = require('./mock')
 
 const generateSong = () =>{
   const artistName = generateArtist()  
-  return {
-    title: generateSongTitle(),
-    artist: artistName,
-    album: `${artistName} - Album ${rnd(1, 100)}`,
-  }
+  return [
+    artistName,
+    `${artistName} - Album ${rnd(1, 100)}`,
+    generateSongTitle(),
+  ]
 }
 
 const generatePlaylist = () => {
-  return {
-    title: `Playlist ${rnd(1, 1000000)}`,
-    setlist: generateSetlist(),
-    tags: generatePlaylistTags()
-  }
+  return [
+    `Playlist ${rnd(1, 1000000)}`,
+    generatePlaylistTags(),
+    generateSetlist(),
+  ]
 }
 
 function generateArtist() {
@@ -23,14 +23,9 @@ function generateArtist() {
 
 const generateSetlist = () => {
   const nSongs = rnd(0, 50)
-  const setlist = []
+  const setlist = {}
   for (let index = 0; index < nSongs; index++) {
-    let currentSong = {
-      order: index,
-      title: generateSongTitle(),
-      artist: generateArtist()
-    } 
-    setlist.push(currentSong)
+    setlist[index] = generateSongTitle()
   }
   return setlist
 }
