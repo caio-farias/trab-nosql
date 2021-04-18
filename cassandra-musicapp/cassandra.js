@@ -33,7 +33,7 @@ class Cassandra {
   }
 
   selectPlaylistSongsByTitle= async (params) => {
-    const query = 'SELECT playlist_songs FROM playlists_by_title WHERE title=?';
+    const query = 'SELECT playlist_songs FROM playlists_by_title WHERE title=?'
     this.client.execute(query, params, function(err, res) {
       if(err){
         console.log(err)
@@ -55,7 +55,7 @@ class Cassandra {
   }
 
   insertManySongs = async (params, cycleCondition) => {
-    const insert = 'INSERT INTO songs (id, artist, album, title) VALUES (now(), ?, ?, ?)';
+    const insert = 'INSERT INTO songs (id, artist, album, title) VALUES (now(), ?, ?, ?)'
     const queries = []
     params.forEach(song => {
       queries.push({query: insert, params: song})
@@ -65,7 +65,7 @@ class Cassandra {
   }
 
   insertManyPlaylists = async (params, cycleCondition) => {
-    const insert = 'INSERT INTO playlists (id, title, tags, playlist_songs) VALUES (now(), ?, ?, ?)';
+    const insert = 'INSERT INTO playlists (id, title, tags, playlist_songs) VALUES (now(), ?, ?, ?)'
     const queries = []
     params.forEach(playlist => {
       queries.push({query: insert, params: playlist})

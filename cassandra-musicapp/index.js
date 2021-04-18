@@ -5,7 +5,7 @@ async function main(){
   const Cass = new Cassandra()
   const start = process.hrtime()
   
-  const total = 100000
+  const total = 1000000
   const batchSize = 20
   const it = Math.floor(total/batchSize)
 
