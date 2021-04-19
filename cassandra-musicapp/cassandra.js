@@ -77,7 +77,7 @@ class Cassandra {
   insertBatch = async(queries, info) => {
     const { cycleCondition, type } = info
     const start = process.hrtime()
-    await this.client.batch(queries, { prepare: true, readTimeout: 30000 })
+    await this.client.batch(queries, { prepare: true, readTimeout: 30000, traceQuery: true, captureStackTrace: true })
     const end = process.hrtime(start)[1] / 1000000
     if(cycleCondition)
       console.log(`Batch ${type} inserida em ${end}ms!`)

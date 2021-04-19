@@ -7,7 +7,7 @@ async function main(exec){
   const mongo = new Mongo(URI)
   await mongo.connect()
 
-  const total = 100
+  const total = 100000
   const batchSize = total/10
   const it = Math.floor(total/batchSize)
   const dbName = 'musicapp'
